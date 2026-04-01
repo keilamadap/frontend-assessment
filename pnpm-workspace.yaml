@@ -1,7 +1,3 @@
-# Required for pnpm install to work correctly.
-packages:
-  - .
-
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
