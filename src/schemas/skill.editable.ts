@@ -16,5 +16,6 @@ export const skillInputSchema = z.object({
   level: z.string().min(1, "Level is required"),
 });
 
-export type PostSkill = z.infer<typeof skillInputSchema>;
-export type PutSkill = z.infer<typeof skillInputSchema>;
+export type SkillInput = z.infer<typeof skillInputSchema>;
+export type PostSkill = SkillInput;
+export type PutSkill = SkillInput;

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -19,6 +20,8 @@ import { PostSkill, skillInputSchema } from "@/schemas/skill.editable";
 
 export function AddSkillDialog() {
   const [open, setOpen] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
   const { mutateAsync, isPending } = usePostSkill();
 
   const form = useForm<PostSkill>({
@@ -30,28 +33,50 @@ export function AddSkillDialog() {
     },
   });
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      setFormError(null);
+      form.reset();
+    }
+  };
+
   const onSubmit = async (data: PostSkill) => {
-    await mutateAsync(data);
-    form.reset();
-    setOpen(false);
+    try {
+      setFormError(null);
+      await mutateAsync(data);
+      form.reset();
+      setOpen(false);
+    } catch {
+      setFormError("Failed to create skill. Please try again.");
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="bg-gf-blue hover:bg-gf-blue/90">
           <Plus />
           Add skill
         </Button>
       </DialogTrigger>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add skill</DialogTitle>
+          <DialogDescription className="sr-only">
+            Add skill form
+          </DialogDescription>
         </DialogHeader>
 
         <FormProvider {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <SkillForm />
+
+            {formError && (
+              <p className="text-sm text-destructive">{formError}</p>
+            )}
 
             <Button
               type="submit"
